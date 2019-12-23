@@ -1,0 +1,30 @@
+{
+  "name": "httpwriter",
+  "parameter": {
+    "targetUrl": "",
+    "method": "",
+    "param": "",
+    "limit": 1000,
+    "column": [
+      {
+        "index": 0,
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "index": 1,
+        "name": "name",
+        "type": "string"
+      }
+    ],
+    "httpConfig": {
+      "retryCount": 3,
+      "maxTotal": 200,
+      "defaultMaxPerRoute": 200,
+      "connectionRequestTimeout": 2000,
+      "connectTimeout": 500,
+      "socketTimeout": 2000,
+      "proxy": ""
+    }
+  }
+}
