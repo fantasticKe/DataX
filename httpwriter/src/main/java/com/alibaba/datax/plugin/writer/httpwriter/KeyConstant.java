@@ -14,11 +14,6 @@ public class KeyConstant {
     public static final String TARGET_URL = "targetUrl";
 
     /**
-     * 请求方式
-     */
-    public static final String METHOD = "method";
-
-    /**
      * 参数名称
      */
     public static final String PARAM = "param";

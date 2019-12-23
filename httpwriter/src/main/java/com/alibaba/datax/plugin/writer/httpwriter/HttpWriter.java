@@ -16,7 +16,6 @@ import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.time.DateUtils;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,8 +76,6 @@ public class HttpWriter extends Writer {
 
         private String targetUrl;
 
-        private String method;
-
         private String params;
 
         private JSONArray columns;
@@ -87,7 +84,7 @@ public class HttpWriter extends Writer {
 
         @Override
         public void startWrite(RecordReceiver lineReceiver) {
-            if (Strings.isNullOrEmpty(targetUrl) || Strings.isNullOrEmpty(method) || Strings.isNullOrEmpty(params))
+            if (Strings.isNullOrEmpty(targetUrl) || Strings.isNullOrEmpty(params))
                 throw DataXException.asDataXException(HttpWriterErrorCode.ILLEGAL_PARAM,
                         HttpWriterErrorCode.ILLEGAL_PARAM.getDescription());
             Record record;
@@ -122,11 +119,7 @@ public class HttpWriter extends Writer {
         public void init() {
             Configuration configuration = super.getPluginJobConf();
             targetUrl = configuration.getNecessaryValue(KeyConstant.TARGET_URL, HttpWriterErrorCode.ILLEGAL_URL_ADDRESS);
-            method = configuration.getNecessaryValue(KeyConstant.METHOD, HttpWriterErrorCode.ILLEGAL_METHOD);
             params = configuration.getNecessaryValue(KeyConstant.PARAM, HttpWriterErrorCode.ILLEGAL_PARAM);
-            if (!HttpPost.METHOD_NAME.equalsIgnoreCase(method))
-                throw DataXException.asDataXException(HttpWriterErrorCode.ILLEGAL_METHOD,
-                        HttpWriterErrorCode.ILLEGAL_METHOD.getDescription());
             Integer limitCount = configuration.getInt(KeyConstant.LIMIT);
             if (Objects.nonNull(limitCount)) limiter = RateLimiter.create(limitCount);
             int retryCount = configuration.getInt(KeyConstant.HTTP_CONFIG_RETRY_COUNT, 3);
