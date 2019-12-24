@@ -5,6 +5,8 @@
     "method": "",
     "param": "",
     "limit": 1000,
+    "expectField": "status",
+    "expectStatus": "1000",
     "column": [
       {
         "index": 0,

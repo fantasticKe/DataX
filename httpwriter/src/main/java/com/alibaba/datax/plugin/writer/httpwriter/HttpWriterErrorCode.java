@@ -10,7 +10,6 @@ import com.alibaba.datax.common.spi.ErrorCode;
  */
 public enum HttpWriterErrorCode implements ErrorCode {
     ILLEGAL_URL_ADDRESS("ILLEGAL_ADDRESS","不合法的URL地址"),
-    ILLEGAL_METHOD("ILLEGAL_METHOD", "错误的请求方式,只支持POST请求方式"),
     ILLEGAL_PARAM("ILLEGAL_PARAM", "参数错误"),
     ILLEGAL_COLUMN_CONFIG("ILLEGAL_COLUMN_CONFIG", "列名配置错误"),
     ILLEGAL_VALUE("ILLEGAL_VALUE", "数据不匹配"),

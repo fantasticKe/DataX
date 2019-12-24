@@ -15,15 +15,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.google.common.util.concurrent.RateLimiter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -64,14 +62,6 @@ public class HttpWriter extends Writer {
 
         private static final Logger logger = LoggerFactory.getLogger(Task.class);
 
-        private static final String[] ACCEPT_PATTERNS = new String[]{
-                "yyyy-MM-dd'T'HH:mm:ss.SSS+08:00", "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm:ss.S", "yyyy/MM/dd",
-                "yyyy年MM月dd日", "yyyy-MM-dd", "yyyy年M月d日", "yyyy年M月dd日", "yyyy年MM月d日", "yyyy年MM月dd日HH:mm:ss",
-                "yyyy年MM月dd日HH:mm", "yyyy年MM月dd日HH", "yyyy-M-d", "yyyy-M-dd", "yyyy-MM-d", "yyyy-MM-dd HH:mm",
-                "yyyy-MM-dd HH", "yyyy/MM/dd HH:mm:ss", "yyyy/MM/dd HH:mm", "yyyy/MM/dd HH", "yyyy.MM.dd HH:mm:ss",
-                "yyyy.MM.dd HH:mm", "yyyy.MM.dd HH", "yyyy.MM.dd", "yyyy-MM-dd'T'HH:mm:ss", "yyyyMMdd", "MM/dd/yyyy HH:mm:ss",
-                "MM/dd/yyyy HH:mm", "MM/dd/yyyy HH", "MM/dd/yyyy"};
-
         private HttpClientPoolHelper httpClientPoolHelper;
 
         private String targetUrl;
@@ -81,6 +71,10 @@ public class HttpWriter extends Writer {
         private JSONArray columns;
 
         public RateLimiter limiter;
+
+        public String expectFiled;
+
+        public String expectStatus;
 
         @Override
         public void startWrite(RecordReceiver lineReceiver) {
@@ -108,7 +102,13 @@ public class HttpWriter extends Writer {
                 try {
                     JSONObject data = new JSONObject();
                     data.put(params, json);
-                    httpClientPoolHelper.postRequest(targetUrl, data);
+                    String postRequest = httpClientPoolHelper.postRequest(targetUrl, data);
+                    if (StringUtils.isNoneEmpty(expectFiled, expectStatus)) {
+                        Object o = JSON.parseObject(postRequest).get(expectFiled);
+                        if (!expectStatus.equalsIgnoreCase(o.toString())) {
+                            logger.warn(json.toJSONString());
+                        }
+                    }
                 } catch (Exception e) {
                     logger.error("post request failed:{}, {}", targetUrl, json, e);
                 }
@@ -121,6 +121,8 @@ public class HttpWriter extends Writer {
             targetUrl = configuration.getNecessaryValue(KeyConstant.TARGET_URL, HttpWriterErrorCode.ILLEGAL_URL_ADDRESS);
             params = configuration.getNecessaryValue(KeyConstant.PARAM, HttpWriterErrorCode.ILLEGAL_PARAM);
             Integer limitCount = configuration.getInt(KeyConstant.LIMIT);
+            expectFiled = configuration.getString(KeyConstant.EXPECT_FIELD);
+            expectStatus = configuration.getString(KeyConstant.EXPECT_STATUS);
             if (Objects.nonNull(limitCount)) limiter = RateLimiter.create(limitCount);
             int retryCount = configuration.getInt(KeyConstant.HTTP_CONFIG_RETRY_COUNT, 3);
             int maxTotal = configuration.getInt(KeyConstant.HTTP_CONFIG_MAX_TOTAL, 200);
@@ -172,15 +174,6 @@ public class HttpWriter extends Writer {
                     break;
                 case "BOOL":
                     json.put(columnName, Boolean.parseBoolean(rawData));
-                    break;
-                case "DATE":
-                    try {
-                        Date date = DateUtils.parseDate(rawData, ACCEPT_PATTERNS);
-                        json.put(columnName, date);
-                    } catch (ParseException e) {
-                        json.put(columnName, null);
-                        logger.error("parse date failed:{}", rawData, e);
-                    }
                     break;
                 case "JSON":
                     try {

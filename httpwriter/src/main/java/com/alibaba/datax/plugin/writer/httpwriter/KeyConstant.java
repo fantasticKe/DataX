@@ -24,6 +24,16 @@ public class KeyConstant {
     public static final String LIMIT = "limit";
 
     /**
+     * 期望返回字段
+     */
+    public static final String EXPECT_FIELD = "expectField";
+
+    /**
+     * 期望返回字段状态值
+     */
+    public static final String EXPECT_STATUS = "expectStatus";
+
+    /**
      * http请求失败重试次数
      */
     public static final String HTTP_CONFIG_RETRY_COUNT = "httpConfig.retryCount";
