@@ -1,0 +1,23 @@
+{
+  "name": "kafkawriter",
+  "parameter": {
+    "bootstrapServers": "kafka集群地址",
+    "topic": "kafka主题",
+    "acks": "",
+    "retries": 0,
+    "lingerMs": 1,
+    "batchSize": 100,
+    "column": [
+      {
+        "index": 0,
+        "name": "id",
+        "type": "int"
+      },
+      {
+        "index": 1,
+        "name": "name",
+        "type": "string"
+      }
+    ]
+  }
+}

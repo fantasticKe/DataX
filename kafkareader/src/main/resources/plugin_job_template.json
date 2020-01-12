@@ -1,0 +1,20 @@
+{
+    "name": "kafkareader",
+    "parameter": {
+        "bootstrapServers": "kafka集群地址",
+        "topic": "kafka主题",
+        "partitions": "分区数",
+        "groupId": "消费者组id",
+        "sessionTimeoutMs": 30000,
+        "partitionsOffset": {
+            "0": 100,
+            "1": 200
+        },
+        "column": [
+            {
+                "key": "name",
+                "type": "string"
+            }
+        ]
+    }
+}

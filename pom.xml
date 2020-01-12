@@ -99,6 +99,8 @@
         <module>hbase20xsqlreader</module>
         <module>hbase20xsqlwriter</module>
         <module>httpwriter</module>
+        <module>kafkareader</module>
+        <module>kafkawriter</module>
     </modules>
 
     <dependencyManagement>
